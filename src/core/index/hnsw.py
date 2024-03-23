@@ -4,18 +4,21 @@ import hnswlib
 
 
 class HNSWIndex(object):
+    """
+    Squared L2	'l2'	d = sum((Ai-Bi)^2)
+    Inner product	'ip'	d = 1.0 - sum(Ai*Bi)
+    Cosine similarity	'cosine'	d = 1.0 - sum(Ai*Bi) / sqrt(sum(Ai*Ai) * sum(Bi*Bi))
+    """
 
     def __init__(self,
-                 name,
                  dimension,
-                 space='l2',
+                 metrics='l2',
                  num_thread=-1,
                  m=16,
                  ef=100,
                  ef_construction=100,
                  default_capacity=10000):
-        self._name = name
-        self._space = space
+        self._space = metrics
         self._dimension = dimension
 
         self._M = m
@@ -46,7 +49,7 @@ class HNSWIndex(object):
         self._default_capacity *= 2
         self._index.resize_index(new_size=self._default_capacity)
 
-    def add(self, data, ids=None):
+    def add(self, ids, data):
         self._index.add_items(data, ids)
 
     def search(self, data, top_k=5, k_neighbors=5, filter_param=None):
@@ -56,26 +59,3 @@ class HNSWIndex(object):
                 zip(distances.reshape(1, -1).tolist()[0], labels.reshape(1, -1).tolist()[0]),
                 reverse=True))
         return labels_sorted[:top_k], distances_sorted[:top_k]
-
-
-def main():
-    import numpy as np
-
-    dim = 128
-    num_elements = 10000
-
-    # Generating sample data
-    ids = np.arange(num_elements)
-    data = np.float32(np.random.random((num_elements, dim)))
-
-    index = HNSWIndex('test-index', dim, space='cosine')
-
-    index.add(data, ids)
-    labels, distances = index.search(data)
-
-    for d, l in zip(distances, labels):
-        print(l, d)
-
-
-if __name__ == '__main__':
-    main()

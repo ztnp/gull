@@ -3,23 +3,17 @@ from typing import List
 from pydantic import BaseModel
 
 
-class CreateCollectionModel(BaseModel):
+class CreateCollection(BaseModel):
     dimension: int
     metrics: str | None = None
 
 
-class CreatePointModel(BaseModel):
-    ids: str
-    embeddings: List[float]
-    metadatas: dict | None = None
-
-
-class CreatePointModelBatch(BaseModel):
+class CreatePoint(BaseModel):
     ids: List[str]
     embeddings: List[List[float]]
     metadatas: List[dict] | None = None
 
 
-class SearchPointModel(BaseModel):
+class SearchPoint(BaseModel):
     embeddings: List[float] | List[List[float]]
     filter: dict | None = None

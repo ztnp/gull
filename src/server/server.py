@@ -4,7 +4,7 @@ from typing import Union
 from fastapi import FastAPI
 
 from src.core.collection import Collection
-from src.server.types import CreateCollectionModel, CreatePointModel, CreatePointModelBatch, SearchPointModel
+from src.server.types import CreateCollection, CreatePoint, SearchPoint
 from src.utils.Exceptions import CreateCollectionException
 
 app = FastAPI()
@@ -26,7 +26,7 @@ async def get_collection(collection_name: str) -> Union[dict]:
 
 
 @app.post('/collections/{collection_name}')
-async def create_collection(collection_name: str, item: CreateCollectionModel) -> Union[dict]:
+async def create_collection(collection_name: str, item: CreateCollection) -> Union[dict]:
     if collection_name in collections.keys():
         return {'result': 'collection exists', 'status': 'error'}
 
@@ -53,32 +53,26 @@ async def delete_collection(collection_name: str) -> Union[dict]:
 
 #######
 
-@app.get('/collections/{collection_name}/points')
-async def get_points_by_filter() -> Union[dict]:
-    return {'msg': 'list points', 'status': 200}
-
-
-@app.get('/collections/{collection_name}/points/{ids}')
-async def get_points() -> Union[dict]:
-    return {'msg': 'describe point', 'status': 200}
-
 
 @app.post('/collections/{collection_name}/points')
-async def create_points(collection_name: str, item: CreatePointModel) -> Union[dict]:
+async def create_points(collection_name: str, item: CreatePoint) -> Union[dict]:
     _collection = collections.get(collection_name)
     _collection.add(ids=item.ids, embeddings=item.embeddings, metadatas=item.metadatas)
     return {'result': 'create point success', 'status': 'ok'}
 
 
-@app.post('/collections/{collection_name}/points/batch')
-async def create_points_batch(collection_name: str, item: CreatePointModelBatch) -> Union[dict]:
-    _collection = collections.get(collection_name)
-    _collection.batch_add(ids=item.ids, embeddings=item.embeddings, metadatas=item.metadatas)
-    return {'result': 'create point success', 'status': 'ok'}
+# @app.get('/collections/{collection_name}/points')
+# async def get_points_by_filter() -> Union[dict]:
+#     return {'msg': 'list points', 'status': 200}
+
+
+@app.get('/collections/{collection_name}/points/{ids}')
+async def get_points(ids: str) -> Union[dict]:
+    return {'msg': f'get point {ids}', 'status': 200}
 
 
 @app.post('/collections/{collection_name}/points/search')
-async def search_points(collection_name: str, item: SearchPointModel) -> Union[dict]:
+async def search_points(collection_name: str, item: SearchPoint) -> Union[dict]:
     _collection = collections.get(collection_name)
     datas = _collection.search(embeddings=item.embeddings, filter_param=item.filter)
     return {'result': datas, 'status': 'ok'}
