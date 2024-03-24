@@ -15,7 +15,7 @@ class Metadata(object):
         return len(self._metadatas)
 
     def get(self, ids):
-        return self._metadatas[ids]
+        return [self._metadatas[i] for i in ids]
 
     def get_all(self):
         return list(zip(*self._metadatas.items()))

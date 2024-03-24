@@ -47,7 +47,7 @@ class Vector(object):
         self._idt_mapping.update(list(zip(ids, _idt)))
         self._index.add(_idt, vector)
 
-    def search(self, vector, top_k=5, k_neighbors=5):
-        idt, distances = self._index.search(vector, top_k=top_k, k_neighbors=k_neighbors)
+    def search(self, vector, top_k=5):
+        idt, distances = self._index.search(vector, top_k=top_k)
         ids = [self._ids_mapping.get(i) for i in idt]
         return ids, distances

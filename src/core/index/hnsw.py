@@ -55,9 +55,6 @@ class HNSWIndex(object):
     def get(self, ids, return_type='list'):
         return self._index.get_items(ids, return_type=return_type)
 
-    def search(self, data, top_k=5, k_neighbors=5, filter_param=None):
-        labels, distances = self._index.knn_query(data, k=k_neighbors, filter=filter_param)
-        distances_sorted, labels_sorted = zip(
-            *sorted(zip(distances.reshape(1, -1).tolist()[0], labels.reshape(1, -1).tolist()[0]),
-                    reverse=True))
-        return labels_sorted[:top_k], distances_sorted[:top_k]
+    def search(self, data, top_k=5, filter_param=None):
+        labels, distances = self._index.knn_query(data, k=top_k, filter=filter_param)
+        return labels.reshape(1, -1).tolist()[0], distances.reshape(1, -1).tolist()[0]
