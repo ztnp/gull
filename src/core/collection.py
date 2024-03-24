@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from src.core.metadata import Metadata
 from src.core.vector import Vector
 
 
@@ -9,9 +10,7 @@ class Collection(object):
         self._dimension = dimension
         self._metrics = metrics
 
-        self._ids_mapping = dict()
-        # self._ids_int_mapping = dict()
-
+        self._metadata = Metadata()
         self._vector = Vector(dimension, metrics=metrics)
 
     def get_info(self):
@@ -23,17 +22,24 @@ class Collection(object):
         }
 
     def get_count(self):
-        pass
+        if self._vector.get_count() != self._metadata.get_count():
+            raise AssertionError(
+                f'vector size({self._vector.get_count()}) and metadata size({self._metadata.get_count()}) '
+                f'are inconsistent.')
+
+        return self._vector.get_count()
 
     def add(self, ids, embeddings, metadatas=None):
-        _ids_int = range(len(ids))
-        self._ids_mapping.update(list(zip(_ids_int, ids)))
-        # self._ids_int_mapping.update(list(zip(ids, _ids_int)))
+        self._vector.add(ids=ids, vector=embeddings)
+        self._metadata.add(ids=ids, metadatas=metadatas)
 
-        self._vector.add(_ids_int, embeddings)
+    def search(self, embeddings, top_k=5, filter_param=None):
+        vector_result = self._vector.search(embeddings, top_k=top_k)
 
-    def search(self, embeddings, top_k=5, fileter_param=None):
-        self._vector.search(embeddings, top_k=top_k)
+        if filter_param is None:
+            metadata_result = []
+        else:
+            metadata_result = self._metadata.search(filter_param)
 
     def drop(self):
         self._vector.drop()
