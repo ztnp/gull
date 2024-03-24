@@ -8,6 +8,9 @@ class Vector(object):
         self._metrics = metrics
         self._dimension = dimension
 
+        # vector count
+        self._count = 0
+
         # id_int -> id_string
         self._ids_mapping = dict()
 
@@ -27,10 +30,19 @@ class Vector(object):
         return self._index.get(ids=_idt)
 
     def get_all(self):
-        return self._index.get(ids=list(self._ids_mapping.keys()))
+        return list(self._idt_mapping.keys()), self._index.get(ids=list(self._ids_mapping.keys()))
 
     def add(self, ids, vector):
-        _idt = range(len(self._ids_mapping), len(ids))
+
+        _idt = []
+        for i in ids:
+            _tmp_ids = self._idt_mapping.get(i)
+            if _tmp_ids is None:
+                _idt.append(self._count)
+                self._count += 1
+            else:
+                _idt.append(_tmp_ids)
+
         self._ids_mapping.update(list(zip(_idt, ids)))
         self._idt_mapping.update(list(zip(ids, _idt)))
         self._index.add(_idt, vector)

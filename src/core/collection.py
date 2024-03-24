@@ -26,7 +26,6 @@ class Collection(object):
             raise AssertionError(
                 f'vector size({self._vector.get_count()}) and metadata size({self._metadata.get_count()}) '
                 f'are inconsistent.')
-
         return self._vector.get_count()
 
     def add(self, ids, embeddings, metadatas=None):
@@ -43,3 +42,4 @@ class Collection(object):
 
     def drop(self):
         self._vector.drop()
+        self._metadata.drop()
